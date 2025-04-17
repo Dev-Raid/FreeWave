@@ -46,7 +46,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.getIsAccountNonLocked();
     }
 
     @Override
