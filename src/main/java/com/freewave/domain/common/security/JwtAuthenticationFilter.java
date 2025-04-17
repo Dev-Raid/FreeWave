@@ -2,6 +2,8 @@ package com.freewave.domain.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freewave.domain.auth.dto.request.LoginRequest;
+import com.freewave.domain.auth.entity.RefreshToken;
+import com.freewave.domain.auth.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +22,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtUtil jwtUtil;
+    private final TokenService tokenService;
 
     // login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
@@ -47,10 +50,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        String accessToken = jwtUtil.createAccessToken(principalDetails);
-        String refreshToken = jwtUtil.createRefreshToken(principalDetails);
+        Long userId = principalDetails.getUser().getId();
+        String nickname = principalDetails.getUser().getNickname();
+        String role = principalDetails.getUser().getUserRole().getAuthority();
 
-        jwtUtil.addAccessTokenToCookie(response, accessToken);
+        String accessToken = jwtUtil.createAccessToken(userId, nickname, role);
+        String refreshToken = jwtUtil.createRefreshToken(userId);
+
+        tokenService.saveRefreshToken(new RefreshToken(userId, refreshToken));
+
+        jwtUtil.addAccessTokenToHeader(response, accessToken);
         jwtUtil.addRefreshTokenToCookie(response, refreshToken);
     }
 

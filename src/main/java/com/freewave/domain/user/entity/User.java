@@ -18,6 +18,7 @@ public class User extends Timestamped {
     private String email;
     private String password;
     private String nickname;
+    private Boolean isAccountNonLocked;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
@@ -27,9 +28,24 @@ public class User extends Timestamped {
         this.password = password;
         this.userRole = userRole;
         this.nickname = nickname;
+        isAccountNonLocked = true;
+    }
+
+    private User(Long userId, UserRole userRole, String nickname) {
+        id = userId;
+        this.userRole = userRole;
+        this.nickname = nickname;
     }
 
     public static User of(String username, String password, UserRole userRole, String nickname) {
         return new User(username, password, userRole, nickname);
+    }
+
+    public static User fromToken(Long userId, UserRole userRole, String nickname) {
+        return new User(userId, userRole, nickname);
+    }
+
+    public void accountLock() {
+        isAccountNonLocked = false;
     }
 }

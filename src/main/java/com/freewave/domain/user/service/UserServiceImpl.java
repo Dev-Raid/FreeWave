@@ -5,6 +5,7 @@ import com.freewave.domain.user.entity.User;
 import com.freewave.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -27,9 +28,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User isValidUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new InvalidRequestException("Not found user")
+        );
+    }
+
+    @Override
     public void isExistsEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new InvalidRequestException("Email already exists");
         }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void lockAccount(Long userId) {
+        User user = isValidUser(userId);
+        user.accountLock();
     }
 }

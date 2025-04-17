@@ -8,5 +8,9 @@ public interface UserService {
 
     User isValidEmail(String email);
 
+    User isValidUser(Long userId);
+
     void isExistsEmail(String email);
+
+    void lockAccount(Long userId);
 }

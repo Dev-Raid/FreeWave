@@ -1,6 +1,10 @@
 package com.freewave.domain.common.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.freewave.domain.common.exception.InvalidTokenException;
+import com.freewave.domain.common.exception.JwtTokenExpiredException;
+import com.freewave.domain.user.entity.User;
+import com.freewave.domain.user.enums.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,28 +25,25 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final PrincipalDetailsService principalDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        // "/api/v1/auth/**" 경로는 JWT 검증을 하지 않음
         if (request.getRequestURI().startsWith("/api/v1/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("인증이나 권한이 필요한 주소가 요청이 됨");
-
-        String tokenValue = jwtUtil.resolveTokenFromCookie(request);
+        String tokenValue = jwtUtil.getAccessTokenFromHeader(request);
 
         if (StringUtils.hasText(tokenValue)) {
-
-            DecodedJWT info = jwtUtil.validateToken(tokenValue);
-
             try {
-                setAuthentication(info.getSubject());
-            } catch (Exception e) {
-                log.error(e.getMessage());
+                DecodedJWT info = jwtUtil.validateToken(tokenValue);
+                setAuthentication(info);
+            } catch (JwtTokenExpiredException e) {
+                handleUnauthorizedResponse(response, "Expired token: " + e.getMessage());
+                return;
+            } catch (InvalidTokenException e) {
+                handleUnauthorizedResponse(response, "Token verification failed: " + e.getMessage());
                 return;
             }
         }
@@ -51,17 +52,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 처리
-    public void setAuthentication(String username) {
+    private void setAuthentication(DecodedJWT info) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(username);
+        Authentication authentication = createAuthentication(info);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String username) {
-        PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(username);
+    private Authentication createAuthentication(DecodedJWT info) {
+        User user = User.fromToken(Long.valueOf(info.getSubject()), UserRole.of(info.getClaim("role").asString()), info.getClaim("nickname").asString());
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
         return new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+    }
+
+    private void handleUnauthorizedResponse(HttpServletResponse response, String logMessage) {
+        log.error(logMessage);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
