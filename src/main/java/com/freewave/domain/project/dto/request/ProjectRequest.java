@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectSaveRequest {
+public class ProjectRequest {
 
     private String title;
     private String description;

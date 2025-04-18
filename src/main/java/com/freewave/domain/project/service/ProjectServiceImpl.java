@@ -1,11 +1,12 @@
 package com.freewave.domain.project.service;
 
 import com.freewave.domain.common.security.PrincipalDetails;
-import com.freewave.domain.project.dto.request.ProjectSaveRequest;
+import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.dto.response.ProjectResponse;
 import com.freewave.domain.project.entity.Project;
 import com.freewave.domain.project.repository.ProjectRepository;
 import com.freewave.domain.user.enums.UserRole;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,7 +22,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public Project createProject(PrincipalDetails principalDetails, ProjectSaveRequest request) {
+    public Project createProject(PrincipalDetails principalDetails, ProjectRequest request) {
 
         if (principalDetails.getUser().getUserRole() != UserRole.ROLE_CLIENT) {
             throw new AccessDeniedException("프로젝트 등록은 클라이언트만 가능합니다.");
@@ -48,6 +49,21 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findByClientId(clientId).stream()
                 .map(ProjectResponse::new)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public Project updateProject(Long projectId, PrincipalDetails principalDetails,
+            ProjectRequest request) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        if (!project.getClientId().equals(principalDetails.getUser().getId())) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
+        }
+
+        project.update(request);
+        return project;
     }
 
 }

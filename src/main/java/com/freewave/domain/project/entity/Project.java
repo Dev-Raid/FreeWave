@@ -1,6 +1,6 @@
 package com.freewave.domain.project.entity;
 
-import com.freewave.domain.project.dto.request.ProjectSaveRequest;
+import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.enums.ProjectStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "project")
 public class Project {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long clientId;
@@ -36,7 +37,7 @@ public class Project {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static Project create(Long clientId, ProjectSaveRequest request) {
+    public static Project create(Long clientId, ProjectRequest request) {
         Project project = new Project();
         project.clientId = clientId;
         project.title = request.getTitle();
@@ -47,6 +48,14 @@ public class Project {
         project.createdAt = LocalDateTime.now();
         project.updatedAt = LocalDateTime.now();
         return project;
+    }
+
+    public void update(ProjectRequest request) {
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.budget = request.getBudget();
+        this.deadline = request.getDeadline();
+        this.updatedAt = LocalDateTime.now();
     }
 
 }
