@@ -37,4 +37,9 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
+    @GetMapping("/v1/myprojects")
+    public ResponseEntity<List<ProjectResponse>> getMyProjects(
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return ResponseEntity.ok(projectService.getMyProjects(principalDetails));
+    }
 }
