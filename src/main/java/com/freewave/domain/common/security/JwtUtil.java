@@ -37,7 +37,7 @@ public class JwtUtil {
     public String createAccessToken(Long userId, String nickname, String role) {
         return BEARER_PREFIX + JWT.create()
                 .withSubject(userId.toString())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000L)) // 30분
+                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 30 * 1000L)) // 30분
                 .withClaim("nickname", nickname)
                 .withClaim("role", role)
                 .sign(Algorithm.HMAC512(accessSecretKey));
