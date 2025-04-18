@@ -2,6 +2,7 @@ package com.freewave.domain.project.service;
 
 import com.freewave.domain.common.security.PrincipalDetails;
 import com.freewave.domain.project.dto.request.ProjectSaveRequest;
+import com.freewave.domain.project.dto.response.ProjectResponse;
 import com.freewave.domain.project.entity.Project;
 import com.freewave.domain.project.repository.ProjectRepository;
 import com.freewave.domain.user.enums.UserRole;
@@ -34,8 +35,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectResponse> getAllProjects() {
+        return projectRepository.findAll().stream()
+                .map(ProjectResponse::new)
+                .toList();
     }
 
 }

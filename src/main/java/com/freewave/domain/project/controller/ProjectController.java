@@ -33,12 +33,8 @@ public class ProjectController {
 
     @GetMapping("/v1/projects")
     public ResponseEntity<List<ProjectResponse>> getAllProjects() {
-        List<Project> projects = projectService.getAllProjects();
-        List<ProjectResponse> response = projects.stream()
-                .map(ProjectResponse::new)
-                .toList();
-
-        return ResponseEntity.ok(response);
+        List<ProjectResponse> projects = projectService.getAllProjects();
+        return ResponseEntity.ok(projects);
     }
 
 }
