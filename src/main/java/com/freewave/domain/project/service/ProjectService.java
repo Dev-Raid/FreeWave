@@ -11,4 +11,6 @@ public interface ProjectService {
     Project createProject(PrincipalDetails principalDetails, ProjectSaveRequest request);
 
     List<ProjectResponse> getAllProjects();
+
+    List<ProjectResponse> getMyProjects(PrincipalDetails principalDetails);
 }

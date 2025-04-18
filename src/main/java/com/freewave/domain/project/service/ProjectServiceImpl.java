@@ -41,4 +41,13 @@ public class ProjectServiceImpl implements ProjectService {
                 .toList();
     }
 
+    @Override
+    public List<ProjectResponse> getMyProjects(PrincipalDetails principalDetails) {
+        Long clientId = principalDetails.getUser().getId();
+
+        return projectRepository.findByClientId(clientId).stream()
+                .map(ProjectResponse::new)
+                .toList();
+    }
+
 }
