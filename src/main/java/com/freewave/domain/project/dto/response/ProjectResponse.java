@@ -17,18 +17,18 @@ public class ProjectResponse {
     private final LocalDate deadline;
     private final ProjectStatus status;
     private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final LocalDateTime modifiedAt;
 
     public ProjectResponse(Project project) {
-        this.id = project.getId();
-        this.clientId = project.getClientId();
-        this.title = project.getTitle();
-        this.description = project.getDescription();
-        this.budget = project.getBudget();
-        this.deadline = project.getDeadline();
-        this.status = project.getStatus();
-        this.createdAt = project.getCreatedAt();
-        this.updatedAt = project.getUpdatedAt();
+        id = project.getId();
+        clientId = project.getClientId();
+        title = project.getTitle();
+        description = project.getDescription();
+        budget = project.getBudget();
+        deadline = project.getDeadline();
+        status = project.getStatus();
+        createdAt = project.getCreatedAt();
+        modifiedAt = project.getModifiedAt();
     }
 
 }

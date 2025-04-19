@@ -1,7 +1,7 @@
 package com.freewave.domain.project.controller;
 
 import com.freewave.domain.common.security.PrincipalDetails;
-import com.freewave.domain.project.dto.request.ProjectSaveRequest;
+import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.dto.response.ProjectResponse;
 import com.freewave.domain.project.entity.Project;
 import com.freewave.domain.project.service.ProjectService;
@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +27,7 @@ public class ProjectController {
     @PostMapping("/v1/projects")
     public ResponseEntity<ProjectResponse> createProject(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody ProjectSaveRequest request) {
+            @RequestBody ProjectRequest request) {
 
         Project project = projectService.createProject(principalDetails, request);
         return ResponseEntity.ok(new ProjectResponse(project));
@@ -41,5 +43,15 @@ public class ProjectController {
     public ResponseEntity<List<ProjectResponse>> getMyProjects(
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
         return ResponseEntity.ok(projectService.getMyProjects(principalDetails));
+    }
+
+    @PutMapping("/v1/projects/{id}")
+    public ResponseEntity<ProjectResponse> updateProject(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody ProjectRequest request) {
+
+        Project updatedProject = projectService.updateProject(id, principalDetails, request);
+        return ResponseEntity.ok(new ProjectResponse(updatedProject));
     }
 }
