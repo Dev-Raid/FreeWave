@@ -45,13 +45,13 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getMyProjects(principalDetails));
     }
 
-    @PutMapping("/v1/projects/{Id}")
+    @PutMapping("/v1/projects/{id}")
     public ResponseEntity<ProjectResponse> updateProject(
-            @PathVariable Long Id,
+            @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody ProjectRequest request) {
 
-        Project updatedProject = projectService.updateProject(Id, principalDetails, request);
+        Project updatedProject = projectService.updateProject(id, principalDetails, request);
         return ResponseEntity.ok(new ProjectResponse(updatedProject));
     }
 }

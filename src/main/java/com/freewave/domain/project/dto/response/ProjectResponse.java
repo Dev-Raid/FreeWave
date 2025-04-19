@@ -17,7 +17,7 @@ public class ProjectResponse {
     private final LocalDate deadline;
     private final ProjectStatus status;
     private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final LocalDateTime modifiedAt;
 
     public ProjectResponse(Project project) {
         this.id = project.getId();
@@ -28,7 +28,7 @@ public class ProjectResponse {
         this.deadline = project.getDeadline();
         this.status = project.getStatus();
         this.createdAt = project.getCreatedAt();
-        this.updatedAt = project.getUpdatedAt();
+        this.modifiedAt = project.getModifiedAt();
     }
 
 }
