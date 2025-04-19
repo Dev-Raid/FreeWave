@@ -16,4 +16,6 @@ public interface ProjectService {
 
     Project updateProject(Long projectId, PrincipalDetails principalDetails,
             ProjectRequest request);
+
+    void deleteProject(Long projectId, PrincipalDetails principalDetails);
 }

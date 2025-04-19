@@ -66,4 +66,16 @@ public class ProjectServiceImpl implements ProjectService {
         return project;
     }
 
+    @Override
+    @Transactional
+    public void deleteProject(Long projectId, PrincipalDetails principalDetails) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        if (!project.getClientId().equals(principalDetails.getUser().getId())) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+
+        projectRepository.delete(project);
+    }
 }
