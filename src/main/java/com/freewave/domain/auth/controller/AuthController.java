@@ -5,16 +5,17 @@ import com.freewave.domain.auth.dto.request.SignupRequest;
 import com.freewave.domain.auth.dto.response.SignupResponse;
 import com.freewave.domain.auth.service.AuthService;
 import com.freewave.domain.auth.service.TokenService;
-import com.freewave.domain.common.security.JwtUtil;
-import com.freewave.domain.common.security.PrincipalDetails;
+import com.freewave.domain.common.component.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,12 +44,5 @@ public class AuthController {
         jwtUtil.addRefreshTokenToCookie(response, newTokens.getRefreshToken());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newTokens);
-    }
-
-    @GetMapping("/v1/test")
-    public void test(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        System.out.println(principalDetails.getUser().getId());
-        System.out.println(principalDetails.getUser().getUserRole());
-        System.out.println(principalDetails.getUser().getNickname());
     }
 }

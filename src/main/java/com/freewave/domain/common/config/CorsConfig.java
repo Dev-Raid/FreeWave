@@ -30,6 +30,8 @@ public class CorsConfig {
         // 모든 요청 헤더를 허용
         configuration.addAllowedHeader("*");
 
+        configuration.addExposedHeader("Authorization");
+
         // 특정 URL 패턴에 대해 CORS 정책 등록
         source.registerCorsConfiguration("/**", configuration);
 

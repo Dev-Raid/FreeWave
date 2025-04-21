@@ -18,6 +18,7 @@ public class User extends Timestamped {
     private String email;
     private String password;
     private String nickname;
+    private String imageUrl;
     private Boolean isAccountNonLocked;
 
     @Enumerated(EnumType.STRING)
@@ -47,5 +48,15 @@ public class User extends Timestamped {
 
     public void accountLock() {
         isAccountNonLocked = false;
+    }
+
+    public void updateProfile(String nickname, String password, UserRole userRole) {
+        this.nickname = nickname;
+        this.password = password;
+        this.userRole = userRole;
+    }
+
+    public void updateProfileImage(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

@@ -1,6 +1,7 @@
 package com.freewave.domain.common.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.freewave.domain.common.component.JwtUtil;
 import com.freewave.domain.common.exception.InvalidTokenException;
 import com.freewave.domain.common.exception.JwtTokenExpiredException;
 import com.freewave.domain.user.entity.User;
