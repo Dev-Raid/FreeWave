@@ -1,12 +1,12 @@
 package com.freewave.domain.auth.service;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.freewave.domain.auth.dto.TokenPair;
 import com.freewave.domain.auth.entity.RefreshToken;
+import com.freewave.domain.auth.exception.AnomalyDetectionException;
 import com.freewave.domain.auth.repository.RefreshTokenRepository;
-import com.freewave.domain.common.exception.AnomalyDetectionException;
+import com.freewave.domain.common.component.JwtUtil;
 import com.freewave.domain.common.exception.InvalidTokenException;
-import com.freewave.domain.common.security.JwtUtil;
+import com.freewave.domain.user.dto.response.UserFromTokenResponse;
 import com.freewave.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,28 +32,24 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Transactional
     public TokenPair refreshTokens(TokenPair tokenPair) {
-        DecodedJWT info = jwtUtil.getUserInfoFromToken(tokenPair.getAccessToken());
-        Long userId = Long.valueOf(info.getSubject());
+        UserFromTokenResponse user = userService.getUserFromToken(tokenPair.getAccessToken());
 
-        RefreshToken refreshToken = refreshTokenRepository.findById(userId).orElseThrow(
+        RefreshToken refreshToken = refreshTokenRepository.findById(user.getUserId()).orElseThrow(
                 () -> new InvalidTokenException("Not found refreshToken")
         );
 
         if (!refreshToken.getRefreshToken().equals(tokenPair.getRefreshToken())) {
             log.info("Anomaly Detection");
 
-            userService.lockAccount(userId);
+            userService.lockAccount(user.getUserId());
             refreshTokenRepository.delete(refreshToken);
 
             throw new AnomalyDetectionException("Anomaly Detection");
         } else {
-            String nickname = info.getClaim("nickname").asString();
-            String role = info.getClaim("role").asString();
+            String newAccessToken = jwtUtil.createAccessToken(user.getUserId(), user.getNickname(), user.getUserRole());
+            String newRefreshToken = jwtUtil.createRefreshToken(user.getUserId());
 
-            String newAccessToken = jwtUtil.createAccessToken(userId, nickname, role);
-            String newRefreshToken = jwtUtil.createRefreshToken(userId);
-
-            refreshTokenRepository.save(new RefreshToken(userId, newRefreshToken));
+            refreshTokenRepository.save(new RefreshToken(user.getUserId(), newRefreshToken));
 
             return new TokenPair(newAccessToken, newRefreshToken);
         }

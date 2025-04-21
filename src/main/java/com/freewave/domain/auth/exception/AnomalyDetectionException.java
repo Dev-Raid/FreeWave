@@ -1,4 +1,4 @@
-package com.freewave.domain.common.exception;
+package com.freewave.domain.auth.exception;
 
 public class AnomalyDetectionException extends RuntimeException {
     public AnomalyDetectionException(String message) {

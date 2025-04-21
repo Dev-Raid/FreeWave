@@ -1,9 +1,9 @@
 package com.freewave.domain.common.config;
 
 import com.freewave.domain.auth.service.TokenService;
+import com.freewave.domain.common.component.JwtUtil;
 import com.freewave.domain.common.security.JwtAuthenticationFilter;
 import com.freewave.domain.common.security.JwtAuthorizationFilter;
-import com.freewave.domain.common.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

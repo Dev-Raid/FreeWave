@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freewave.domain.auth.dto.request.LoginRequest;
 import com.freewave.domain.auth.entity.RefreshToken;
 import com.freewave.domain.auth.service.TokenService;
+import com.freewave.domain.common.component.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
