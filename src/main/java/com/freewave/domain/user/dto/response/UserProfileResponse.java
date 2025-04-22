@@ -12,4 +12,5 @@ public class UserProfileResponse {
     private final String userRole;
     private final String imageUrl;
     private final String email;
+    private final String bio;
 }

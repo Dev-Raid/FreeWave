@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
         String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
         UserRole userRole = UserRole.of(signupRequest.getUserRole());
 
-        User newUser = User.of(signupRequest.getEmail(), encodedPassword, userRole, signupRequest.getNickname());
+        User newUser = User.of(signupRequest.getEmail(), encodedPassword, userRole, signupRequest.getNickname(), signupRequest.getImageUrl());
         User savedUser = userService.saveUser(newUser);
 
         return new SignupResponse(savedUser.getEmail());

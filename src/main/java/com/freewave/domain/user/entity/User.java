@@ -19,16 +19,20 @@ public class User extends Timestamped {
     private String password;
     private String nickname;
     private String imageUrl;
+    private String bio;
+
     private Boolean isAccountNonLocked;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    private User(String username, String password, UserRole userRole, String nickname) {
+    private User(String username, String password, UserRole userRole, String nickname, String imageUrl) {
         this.email = username;
         this.password = password;
         this.userRole = userRole;
         this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.bio = "자기소개가 없습니다. 자신을 소개해보세요!";
         isAccountNonLocked = true;
     }
 
@@ -38,8 +42,8 @@ public class User extends Timestamped {
         this.nickname = nickname;
     }
 
-    public static User of(String username, String password, UserRole userRole, String nickname) {
-        return new User(username, password, userRole, nickname);
+    public static User of(String username, String password, UserRole userRole, String nickname, String imageUrl) {
+        return new User(username, password, userRole, nickname, imageUrl);
     }
 
     public static User fromToken(Long userId, UserRole userRole, String nickname) {
@@ -58,5 +62,9 @@ public class User extends Timestamped {
 
     public void updateProfileImage(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void updateProfileBio(String bio) {
+        this.bio = bio;
     }
 }

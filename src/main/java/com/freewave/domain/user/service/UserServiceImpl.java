@@ -7,6 +7,7 @@ import com.freewave.domain.common.exception.UnsupportedFileTypeException;
 import com.freewave.domain.common.security.PrincipalDetails;
 import com.freewave.domain.common.service.S3Service;
 import com.freewave.domain.common.service.S3ServiceFactory;
+import com.freewave.domain.user.dto.request.UserProfileBioRequest;
 import com.freewave.domain.user.dto.request.UserProfileRequest;
 import com.freewave.domain.user.dto.response.UserFromTokenResponse;
 import com.freewave.domain.user.dto.response.UserProfileImageResponse;
@@ -73,7 +74,8 @@ public class UserServiceImpl implements UserService {
                 user.getNickname(),
                 user.getUserRole().getAuthority(),
                 user.getImageUrl(),
-                user.getEmail()
+                user.getEmail(),
+                user.getBio()
         );
     }
 
@@ -107,7 +109,8 @@ public class UserServiceImpl implements UserService {
                 user.getNickname(),
                 user.getUserRole().getAuthority(),
                 user.getImageUrl(),
-                user.getEmail()
+                user.getEmail(),
+                user.getBio()
         );
     }
 
@@ -119,10 +122,8 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRequestException("Profile image file is required");
         }
 
-        // 2. Content Type 확인 방법
         String contentType = file.getContentType();
 
-        // 3. Content Type이 이미지인지 확인
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new UnsupportedFileTypeException("Only image files can be uploaded. Current file type: " + contentType);
         }
@@ -138,5 +139,22 @@ public class UserServiceImpl implements UserService {
         user.updateProfileImage(imageUrl);
 
         return new UserProfileImageResponse(user.getImageUrl());
+    }
+
+    @Override
+    @Transactional
+    public UserProfileResponse updateUserProfileBio(PrincipalDetails principalDetails, UserProfileBioRequest userProfileBioRequest) {
+        User user = isValidUser(principalDetails.getUser().getId());
+
+        user.updateProfileBio(userProfileBioRequest.getBio());
+
+        return new UserProfileResponse(
+                user.getId(),
+                user.getNickname(),
+                user.getUserRole().getAuthority(),
+                user.getImageUrl(),
+                user.getEmail(),
+                user.getBio()
+        );
     }
 }
