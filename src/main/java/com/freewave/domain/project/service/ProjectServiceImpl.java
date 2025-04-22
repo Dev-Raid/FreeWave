@@ -1,12 +1,12 @@
 package com.freewave.domain.project.service;
 
+import com.freewave.domain.common.exception.ServiceNotFoundException;
 import com.freewave.domain.common.security.PrincipalDetails;
 import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.dto.response.ProjectResponse;
 import com.freewave.domain.project.entity.Project;
 import com.freewave.domain.project.repository.ProjectRepository;
 import com.freewave.domain.user.enums.UserRole;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,9 +30,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Long clientId = principalDetails.getUser().getId();
 
-        Project project = Project.create(clientId, request);
-
-        return projectRepository.save(project);
+        return projectRepository.save(Project.create(clientId, request));
     }
 
     @Override
@@ -40,6 +38,13 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findAll().stream()
                 .map(ProjectResponse::new)
                 .toList();
+    }
+
+    @Override
+    public ProjectResponse getProject(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ServiceNotFoundException("프로젝트를 찾을 수 없습니다."));
+        return new ProjectResponse(project);
     }
 
     @Override
@@ -56,10 +61,10 @@ public class ProjectServiceImpl implements ProjectService {
     public Project updateProject(Long projectId, PrincipalDetails principalDetails,
             ProjectRequest request) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("프로젝트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceNotFoundException("프로젝트를 찾을 수 없습니다."));
 
         if (!project.getClientId().equals(principalDetails.getUser().getId())) {
-            throw new AccessDeniedException("수정 권한이 없습니다.");
+            throw new AccessDeniedException("자신의 프로젝트만 수정이 가능합니다.");
         }
 
         project.update(request);
@@ -70,10 +75,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void deleteProject(Long projectId, PrincipalDetails principalDetails) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("프로젝트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceNotFoundException("프로젝트를 찾을 수 없습니다."));
 
         if (!project.getClientId().equals(principalDetails.getUser().getId())) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
+            throw new AccessDeniedException("자신의 프로젝트만 삭제가 가능합니다.");
         }
 
         projectRepository.delete(project);
