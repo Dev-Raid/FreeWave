@@ -28,4 +28,7 @@ public class SignupRequest {
 
     @NotBlank
     private String userRole;
+
+    @NotBlank
+    private String imageUrl;
 }

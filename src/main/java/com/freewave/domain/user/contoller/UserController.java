@@ -1,7 +1,7 @@
 package com.freewave.domain.user.contoller;
 
-import com.freewave.domain.common.component.JwtUtil;
 import com.freewave.domain.common.security.PrincipalDetails;
+import com.freewave.domain.user.dto.request.UserProfileBioRequest;
 import com.freewave.domain.user.dto.request.UserProfileRequest;
 import com.freewave.domain.user.dto.response.UserProfileImageResponse;
 import com.freewave.domain.user.dto.response.UserProfileResponse;
@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api")
 public class UserController {
 
-    private final JwtUtil jwtUtil;
     private final UserService userService;
 
     @GetMapping("/v1/users/me")
@@ -40,5 +39,13 @@ public class UserController {
             @RequestParam("file") MultipartFile file
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfileImage(principalDetails, file));
+    }
+
+    @PutMapping("/v1/users/profiles/bio")
+    public ResponseEntity<UserProfileResponse> updateUserProfileBio(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody UserProfileBioRequest userProfileBioRequest
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserProfileBio(principalDetails, userProfileBioRequest));
     }
 }
