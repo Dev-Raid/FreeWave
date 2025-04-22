@@ -1,6 +1,7 @@
 package com.freewave.domain.user.entity;
 
 import com.freewave.domain.common.Timestamped;
+import com.freewave.domain.resume.entity.Resume;
 import com.freewave.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Resume resume;
+
     private User(String username, String password, UserRole userRole, String nickname, String imageUrl) {
         this.email = username;
         this.password = password;
@@ -33,6 +37,7 @@ public class User extends Timestamped {
         this.nickname = nickname;
         this.imageUrl = imageUrl;
         this.bio = "자기소개가 없습니다. 자신을 소개해보세요!";
+        resume = new Resume(this);
         isAccountNonLocked = true;
     }
 
