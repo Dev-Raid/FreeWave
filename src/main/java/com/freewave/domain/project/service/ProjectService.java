@@ -12,6 +12,8 @@ public interface ProjectService {
 
     List<ProjectResponse> getAllProjects();
 
+    ProjectResponse getProject(Long id);
+
     List<ProjectResponse> getMyProjects(PrincipalDetails principalDetails);
 
     Project updateProject(Long projectId, PrincipalDetails principalDetails,
