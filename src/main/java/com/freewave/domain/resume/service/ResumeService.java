@@ -8,4 +8,6 @@ public interface ResumeService {
     ResumeResponse updateSkill(PrincipalDetails principalDetails, ResumeRequest responseRequest);
 
     ResumeResponse getUserSkillList(Long resumeId);
+
+    void deleteSkill(PrincipalDetails principalDetails, String skill);
 }

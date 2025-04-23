@@ -31,4 +31,14 @@ public class ResumeController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(resumeService.getUserSkillList(principalDetails.getUser().getId()));
     }
+
+    @DeleteMapping("/v1/resumes/skills/{skill}")
+    public ResponseEntity<?> deleteSkill(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable String skill
+    ) {
+        resumeService.deleteSkill(principalDetails, skill);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

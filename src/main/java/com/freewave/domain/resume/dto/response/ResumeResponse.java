@@ -9,5 +9,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResumeResponse {
 
-    private final List<String> skillList;
+    private final List<String> skills;
 }
