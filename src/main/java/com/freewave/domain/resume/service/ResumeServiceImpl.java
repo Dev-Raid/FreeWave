@@ -55,9 +55,20 @@ public class ResumeServiceImpl implements ResumeService {
                 stream().map(resumeSkill -> resumeSkill
                         .getSkill()
                         .getTechStack()
-                        .getDisplayName()).toList();
+                        .name()).toList();
 
         return new ResumeResponse(skillList);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSkill(PrincipalDetails principalDetails, String skill) {
+        ResumeSkill resumeSkill = resumeSkillRepository.findByResume_IdAndSkill_Id(
+                principalDetails.getUser().getId(), isValidSkill(skill).getId()).orElseThrow(
+                () -> new InvalidRequestException("Invalid resume skill")
+        );
+
+        resumeSkillRepository.delete(resumeSkill);
     }
 
     public Skill isValidSkill(String techStack) {
