@@ -1,5 +1,6 @@
 package com.freewave.domain.resume.entity;
 
+import com.freewave.domain.portfolio.entity.Portfolio;
 import com.freewave.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,6 +24,9 @@ public class Resume {
 
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ResumeSkill> resumeSkillList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Portfolio> portfolioList = new ArrayList<>();
 
     public Resume(User user) {
         this.user = user;
