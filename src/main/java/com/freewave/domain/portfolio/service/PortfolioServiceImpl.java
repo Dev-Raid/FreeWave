@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -51,5 +53,17 @@ public class PortfolioServiceImpl implements PortfolioService {
                 savedPortfolio.getDescription(),
                 savedPortfolio.getPdfUrl()
         );
+    }
+
+    @Override
+    public List<PortfolioResponse> getPortfolioList(PrincipalDetails principalDetails) {
+        Resume resume = userService.isValidUser(principalDetails.getUser().getId()).getResume();
+
+        return resume.getPortfolioList().stream().map(portfolio -> new PortfolioResponse(
+                        portfolio.getId(),
+                        portfolio.getTitle(),
+                        portfolio.getDescription(),
+                        portfolio.getPdfUrl()))
+                .toList();
     }
 }
