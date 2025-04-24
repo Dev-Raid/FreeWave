@@ -36,4 +36,13 @@ public class PortfolioController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(portfolioService.getPortfolioList(principalDetails));
     }
+
+    @DeleteMapping("/v1/portfolio/{id}")
+    public ResponseEntity<?> getPortfolioList(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Long id
+    ) {
+        portfolioService.delete(principalDetails, id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

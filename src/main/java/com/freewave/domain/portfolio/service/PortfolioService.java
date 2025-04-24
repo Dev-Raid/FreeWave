@@ -11,4 +11,6 @@ public interface PortfolioService {
     PortfolioResponse createPortfolio(PrincipalDetails principalDetails, MultipartFile multipartFile, String title, String description);
 
     List<PortfolioResponse> getPortfolioList(PrincipalDetails principalDetails);
+
+    void delete(PrincipalDetails principalDetails, Long portfolioId);
 }
