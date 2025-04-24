@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +66,23 @@ public class PortfolioServiceImpl implements PortfolioService {
                         portfolio.getDescription(),
                         portfolio.getPdfUrl()))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void delete(PrincipalDetails principalDetails, Long portfolioId) {
+        Portfolio portfolio = isValidPortfolio(portfolioId);
+
+        if (Objects.equals(portfolio.getResume().getId(), principalDetails.getUser().getId())) {
+            portfolioRepository.delete(portfolio);
+        } else {
+            throw new InvalidRequestException("It's not your portfolio");
+        }
+    }
+
+    public Portfolio isValidPortfolio(Long portfolioId) {
+        return portfolioRepository.findById(portfolioId).orElseThrow(
+                () -> new InvalidRequestException("Invalid portfolio")
+        );
     }
 }
