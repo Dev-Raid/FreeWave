@@ -25,7 +25,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Project createProject(PrincipalDetails principalDetails, ProjectRequest request) {
 
         if (principalDetails.getUser().getUserRole() != UserRole.ROLE_CLIENT) {
-            throw new AccessDeniedException("프로젝트 등록은 클라이언트만 가능합니다.");
+            throw new AccessDeniedException("Only clients are allowed to register a project.");
         }
 
         Long clientId = principalDetails.getUser().getId();
@@ -43,7 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse getProject(Long id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ServiceNotFoundException("프로젝트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceNotFoundException("Project not found."));
         return new ProjectResponse(project);
     }
 
@@ -61,10 +61,10 @@ public class ProjectServiceImpl implements ProjectService {
     public Project updateProject(Long projectId, PrincipalDetails principalDetails,
             ProjectRequest request) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ServiceNotFoundException("프로젝트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceNotFoundException("Project not found."));
 
         if (!project.getClientId().equals(principalDetails.getUser().getId())) {
-            throw new AccessDeniedException("자신의 프로젝트만 수정이 가능합니다.");
+            throw new AccessDeniedException("You do not have permission to update this project.");
         }
 
         project.update(request);
@@ -75,10 +75,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void deleteProject(Long projectId, PrincipalDetails principalDetails) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ServiceNotFoundException("프로젝트를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceNotFoundException("Project not found."));
 
         if (!project.getClientId().equals(principalDetails.getUser().getId())) {
-            throw new AccessDeniedException("자신의 프로젝트만 삭제가 가능합니다.");
+            throw new AccessDeniedException("You do not have permission to delete this project.");
         }
 
         projectRepository.delete(project);
