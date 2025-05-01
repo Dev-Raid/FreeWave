@@ -52,4 +52,7 @@ public class Project extends Timestamped {
         deadline = request.getDeadline();
     }
 
+    public void updateStatus(ProjectStatus newStatus) {
+        this.status = newStatus;
+    }
 }
