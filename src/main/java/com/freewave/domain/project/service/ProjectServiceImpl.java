@@ -5,6 +5,7 @@ import com.freewave.domain.common.security.PrincipalDetails;
 import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.dto.response.ProjectResponse;
 import com.freewave.domain.project.entity.Project;
+import com.freewave.domain.project.enums.ProjectStatus;
 import com.freewave.domain.project.repository.ProjectRepository;
 import com.freewave.domain.user.enums.UserRole;
 import java.util.List;
@@ -82,5 +83,23 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         projectRepository.delete(project);
+    }
+
+    @Override
+    @Transactional
+    public void updateProjectStatusToQuoting(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ServiceNotFoundException("Project not found."));
+
+        project.updateStatus(ProjectStatus.QUOTING);
+    }
+
+    @Override
+    @Transactional
+    public void updateProjectStatusToInProgress(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ServiceNotFoundException("Project not found."));
+
+        project.updateStatus(ProjectStatus.IN_PROGRESS);
     }
 }

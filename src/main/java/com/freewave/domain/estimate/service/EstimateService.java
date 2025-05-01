@@ -8,4 +8,7 @@ public interface EstimateService {
 
     EstimateResponse proposeEstimate(Long projectId, PrincipalDetails principalDetails,
             EstimateRequest request);
+
+    EstimateResponse acceptEstimate(Long estimateId, PrincipalDetails principalDetails);
+
 }

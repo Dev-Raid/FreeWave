@@ -20,4 +20,8 @@ public interface ProjectService {
             ProjectRequest request);
 
     void deleteProject(Long projectId, PrincipalDetails principalDetails);
+
+    void updateProjectStatusToQuoting(Long projectId);
+
+    void updateProjectStatusToInProgress(Long projectId);
 }
