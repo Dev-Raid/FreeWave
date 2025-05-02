@@ -40,4 +40,11 @@ public class EstimateController {
         EstimateResponse response = estimateService.acceptEstimate(estimateId, principalDetails);
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/v1/estimates/{estimateId}/reject")
+    public ResponseEntity<EstimateResponse> rejectEstimate(@PathVariable Long estimateId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        EstimateResponse response = estimateService.rejectEstimate(estimateId, principalDetails);
+        return ResponseEntity.ok(response);
+    }
 }

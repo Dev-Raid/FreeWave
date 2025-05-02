@@ -11,4 +11,5 @@ public interface EstimateService {
 
     EstimateResponse acceptEstimate(Long estimateId, PrincipalDetails principalDetails);
 
+    EstimateResponse rejectEstimate(Long estimateId, PrincipalDetails principalDetails);
 }

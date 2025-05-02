@@ -8,6 +8,7 @@ import com.freewave.domain.estimate.entity.Estimate;
 import com.freewave.domain.estimate.enums.EstimateStatus;
 import com.freewave.domain.estimate.repository.EstimateRepository;
 import com.freewave.domain.project.entity.Project;
+import com.freewave.domain.project.enums.ProjectStatus;
 import com.freewave.domain.project.repository.ProjectRepository;
 import com.freewave.domain.project.service.ProjectService;
 import com.freewave.domain.user.enums.UserRole;
@@ -55,6 +56,30 @@ public class EstimateServiceImpl implements EstimateService {
         if (estimate.getStatus() != EstimateStatus.ACCEPTED) {
             estimate.accept();
             projectService.updateProjectStatusToInProgress(estimate.getProject().getId());
+        }
+
+        return new EstimateResponse(estimate);
+    }
+
+    @Override
+    @Transactional
+    public EstimateResponse rejectEstimate(Long estimateId, PrincipalDetails principalDetails) {
+        Estimate estimate = estimateRepository.findById(estimateId)
+                .orElseThrow(() -> new ServiceNotFoundException("Estimate not found."));
+
+        Project project = estimate.getProject();
+        Long clientId = principalDetails.getUser().getId();
+
+        if (!project.getClientId().equals(clientId)) {
+            throw new AccessDeniedException("You are not authorized to reject this estimate.");
+        }
+
+        estimate.reject();
+
+        // 모든 견적이 거절 상태일 경우 프로젝트 상태 REGISTERED로 변경
+        if (project.getEstimates().stream()
+                .allMatch(e -> e.getStatus() == EstimateStatus.REJECTED)) {
+            project.updateStatus(ProjectStatus.REGISTERED);
         }
 
         return new EstimateResponse(estimate);
