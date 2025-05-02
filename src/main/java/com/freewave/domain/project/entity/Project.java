@@ -1,16 +1,21 @@
 package com.freewave.domain.project.entity;
 
 import com.freewave.domain.common.Timestamped;
+import com.freewave.domain.estimate.entity.Estimate;
 import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.enums.ProjectStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +38,9 @@ public class Project extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Estimate> estimates = new ArrayList<>();
 
     public static Project create(Long clientId, ProjectRequest request) {
         Project project = new Project();

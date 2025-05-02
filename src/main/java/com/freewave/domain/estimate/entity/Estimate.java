@@ -54,6 +54,9 @@ public class Estimate extends Timestamped {
     }
 
     public void reject() {
+        if (this.status != EstimateStatus.PROPOSED) {
+            throw new IllegalStateException("Only proposed estimates can be rejected.");
+        }
         this.status = EstimateStatus.REJECTED;
     }
 }
