@@ -1,12 +1,17 @@
 package com.freewave.domain.project.service;
 
+import com.freewave.domain.common.exception.InvalidRequestException;
 import com.freewave.domain.common.exception.ServiceNotFoundException;
 import com.freewave.domain.common.security.PrincipalDetails;
 import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.dto.response.ProjectResponse;
 import com.freewave.domain.project.entity.Project;
+import com.freewave.domain.project.entity.ProjectSkill;
 import com.freewave.domain.project.enums.ProjectStatus;
 import com.freewave.domain.project.repository.ProjectRepository;
+import com.freewave.domain.resume.entity.Skill;
+import com.freewave.domain.resume.enums.TechStack;
+import com.freewave.domain.resume.repository.SkillRepository;
 import com.freewave.domain.user.enums.UserRole;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final SkillRepository skillRepository;
 
     @Override
     @Transactional
@@ -31,7 +37,18 @@ public class ProjectServiceImpl implements ProjectService {
 
         Long clientId = principalDetails.getUser().getId();
 
-        return projectRepository.save(Project.create(clientId, request));
+        if (request.getSkills() == null || request.getSkills().isEmpty()) {
+            throw new InvalidRequestException("At least one skill must be provided.");
+        }
+
+        List<Skill> skills = request.getSkills().stream()
+                .map(TechStack::of)
+                .map(ts -> skillRepository.findByTechStack(ts)
+                        .orElseThrow(
+                                () -> new InvalidRequestException("Invalid tech stack: " + ts)))
+                .toList();
+
+        return projectRepository.save(Project.create(clientId, request, skills));
     }
 
     @Override
@@ -61,6 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public Project updateProject(Long projectId, PrincipalDetails principalDetails,
             ProjectRequest request) {
+
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ServiceNotFoundException("Project not found."));
 
@@ -68,8 +86,23 @@ public class ProjectServiceImpl implements ProjectService {
             throw new AccessDeniedException("You do not have permission to update this project.");
         }
 
+        // 기존 스킬을 새로 받은 스킬 목록으로 교체
+        List<Skill> newSkills = request.getSkills().stream()
+                .map(TechStack::of)
+                .map(ts -> skillRepository.findByTechStack(ts)
+                        .orElseThrow(() -> new InvalidRequestException(
+                                "Invalid tech stack: " + ts)))
+                .toList();
+
+        project.getProjectSkillsList().clear();
+
+        for (Skill skill : newSkills) {
+            project.getProjectSkillsList().add(new ProjectSkill(project, skill));
+        }
+
         project.update(request);
-        return project;
+
+        return projectRepository.save(project);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.freewave.domain.project.entity.Project;
 import com.freewave.domain.project.enums.ProjectStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 
 @Getter
@@ -18,6 +19,7 @@ public class ProjectResponse {
     private final ProjectStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
+    private final List<String> skills;
 
     public ProjectResponse(Project project) {
         id = project.getId();
@@ -29,6 +31,9 @@ public class ProjectResponse {
         status = project.getStatus();
         createdAt = project.getCreatedAt();
         modifiedAt = project.getModifiedAt();
+        skills = project.getProjectSkillsList().stream()
+                .map(ps -> ps.getSkill().getTechStack().name())
+                .toList();
     }
 
 }

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,6 @@ public class ProjectRequest {
     @NotNull(message = "마감일은 필수입니다.")
     @Future(message = "마감일은 현재 날짜 이후여야 합니다.")
     private LocalDate deadline;
+
+    private List<String> skills;
 }

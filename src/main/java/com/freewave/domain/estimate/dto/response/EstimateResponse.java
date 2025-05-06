@@ -13,10 +13,10 @@ public class EstimateResponse {
     private final String status;
 
     public EstimateResponse(Estimate estimate) {
-        this.id = estimate.getId();
-        this.freelancerName = estimate.getFreelancer().getNickname();
-        this.proposeBudget = estimate.getProposeBudget();
-        this.content = estimate.getContent();
-        this.status = estimate.getStatus().name();
+        id = estimate.getId();
+        freelancerName = estimate.getFreelancer().getNickname();
+        proposeBudget = estimate.getProposeBudget();
+        content = estimate.getContent();
+        status = estimate.getStatus().name();
     }
 }

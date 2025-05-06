@@ -4,6 +4,7 @@ import com.freewave.domain.common.Timestamped;
 import com.freewave.domain.estimate.entity.Estimate;
 import com.freewave.domain.project.dto.request.ProjectRequest;
 import com.freewave.domain.project.enums.ProjectStatus;
+import com.freewave.domain.resume.entity.Skill;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,9 +41,12 @@ public class Project extends Timestamped {
     private ProjectStatus status;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Estimate> estimates = new ArrayList<>();
+    private List<Estimate> estimatesList = new ArrayList<>();
 
-    public static Project create(Long clientId, ProjectRequest request) {
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectSkill> projectSkillsList = new ArrayList<>();
+
+    public static Project create(Long clientId, ProjectRequest request, List<Skill> skills) {
         Project project = new Project();
         project.clientId = clientId;
         project.title = request.getTitle();
@@ -50,6 +54,9 @@ public class Project extends Timestamped {
         project.budget = request.getBudget();
         project.deadline = request.getDeadline();
         project.status = ProjectStatus.REGISTERED;
+        for (Skill skill : skills) {
+            project.projectSkillsList.add(new ProjectSkill(project, skill));
+        }
         return project;
     }
 

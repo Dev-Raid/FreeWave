@@ -77,7 +77,7 @@ public class EstimateServiceImpl implements EstimateService {
         estimate.reject();
 
         // 모든 견적이 거절 상태일 경우 프로젝트 상태 REGISTERED로 변경
-        if (project.getEstimates().stream()
+        if (project.getEstimatesList().stream()
                 .allMatch(e -> e.getStatus() == EstimateStatus.REJECTED)) {
             project.updateStatus(ProjectStatus.REGISTERED);
         }
