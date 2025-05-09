@@ -14,6 +14,8 @@ import com.freewave.domain.resume.enums.TechStack;
 import com.freewave.domain.resume.repository.SkillRepository;
 import com.freewave.domain.user.enums.UserRole;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -86,23 +88,26 @@ public class ProjectServiceImpl implements ProjectService {
             throw new AccessDeniedException("You do not have permission to update this project.");
         }
 
-        // 기존 스킬을 새로 받은 스킬 목록으로 교체
-        List<Skill> newSkills = request.getSkills().stream()
-                .map(TechStack::of)
-                .map(ts -> skillRepository.findByTechStack(ts)
-                        .orElseThrow(() -> new InvalidRequestException(
-                                "Invalid tech stack: " + ts)))
-                .toList();
-
-        project.getProjectSkillsList().clear();
-
-        for (Skill skill : newSkills) {
-            project.getProjectSkillsList().add(new ProjectSkill(project, skill));
-        }
-
         project.update(request);
 
-        return projectRepository.save(project);
+        List<Skill> requestedSkills = request.getSkills().stream()
+                .map(TechStack::of)
+                .map(ts -> skillRepository.findByTechStack(ts)
+                        .orElseThrow(
+                                () -> new InvalidRequestException("Invalid tech stack: " + ts)))
+                .toList();
+
+        Set<Long> currentSkillIds = project.getProjectSkillsList().stream()
+                .map(ps -> ps.getSkill().getId())
+                .collect(Collectors.toSet());
+
+        for (Skill skill : requestedSkills) {
+            if (!currentSkillIds.contains(skill.getId())) {
+                project.getProjectSkillsList().add(new ProjectSkill(project, skill));
+            }
+        }
+
+        return project;
     }
 
     @Override
